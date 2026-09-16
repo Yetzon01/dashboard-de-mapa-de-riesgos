@@ -65,15 +65,15 @@ body {
 header {
   background: linear-gradient(135deg, #B4D445 0%, #6a9a3a 28%, #135242 72%, #0d3d32 100%);
   border-bottom: 3px solid #B4D445;
-  padding: 14px 24px;
-  min-height: 100px;
+  padding: 10px 18px;
+  min-height: 118px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 10px;
   position: sticky; top: 0; z-index: 300;
   box-shadow: 0 4px 28px rgba(19, 82, 66, 0.45);
-  overflow: hidden;
+  overflow: visible;
 }
 
 .h-title {
@@ -89,10 +89,11 @@ header {
 }
 
 .logo-img {
-  height: 68px;
+  height: 96px;
   width: auto;
-  max-width: 150px;
-  transform: none;
+  max-width: 240px;
+  transform: scale(1.55);
+  transform-origin: center center;
   filter: drop-shadow(0 3px 8px rgba(0,0,0,0.3));
   flex-shrink: 0;
   object-fit: contain;
@@ -102,14 +103,16 @@ header {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 170px;
+  width: 200px;
+  min-height: 110px;
   flex-shrink: 0;
-  overflow: hidden;
+  overflow: visible;
 }
 .header-center {
   flex: 1;
   text-align: center;
   min-width: 0;
+  padding: 0 6px;
 }
 
 /* ========== STATUS ========== */
