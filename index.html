@@ -65,12 +65,14 @@ body {
 header {
   background: linear-gradient(135deg, #B4D445 0%, #6a9a3a 28%, #135242 72%, #0d3d32 100%);
   border-bottom: 3px solid #B4D445;
-  padding: 12px 28px;
+  padding: 18px 28px;
+  min-height: 110px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   position: sticky; top: 0; z-index: 300;
   box-shadow: 0 4px 28px rgba(19, 82, 66, 0.45);
+  overflow: visible;
 }
 
 .header-center { text-align: center; }
@@ -87,9 +89,14 @@ header {
 }
 
 .logo-img {
-  height: 42px; width: auto;
-  transform: scale(2.2);
-  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.25));
+  height: 56px;
+  width: auto;
+  transform: scale(3.2);
+  transform-origin: center center;
+  filter: drop-shadow(0 3px 8px rgba(0,0,0,0.3));
+  zoom: 1.15;
+  flex-shrink: 0;
+  object-fit: contain;
 }
 
 /* ========== STATUS ========== */
@@ -178,7 +185,7 @@ header {
 /* ========== LAYOUT ========== */
 .layout {
   display: flex;
-  height: calc(100vh - 148px);
+  height: calc(100vh - 175px);
   overflow: hidden;
   background: transparent;
 }
