@@ -65,17 +65,17 @@ body {
 header {
   background: linear-gradient(135deg, #B4D445 0%, #6a9a3a 28%, #135242 72%, #0d3d32 100%);
   border-bottom: 3px solid #B4D445;
-  padding: 18px 28px;
-  min-height: 110px;
+  padding: 14px 24px;
+  min-height: 100px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 16px;
   position: sticky; top: 0; z-index: 300;
   box-shadow: 0 4px 28px rgba(19, 82, 66, 0.45);
-  overflow: visible;
+  overflow: hidden;
 }
 
-.header-center { text-align: center; }
 .h-title {
   font-size: 15px; font-weight: 800; color: #fff;
   text-transform: uppercase; letter-spacing: 1.2px;
@@ -89,14 +89,27 @@ header {
 }
 
 .logo-img {
-  height: 56px;
+  height: 68px;
   width: auto;
-  transform: scale(3.2);
-  transform-origin: center center;
+  max-width: 150px;
+  transform: none;
   filter: drop-shadow(0 3px 8px rgba(0,0,0,0.3));
-  zoom: 1.15;
   flex-shrink: 0;
   object-fit: contain;
+  display: block;
+}
+.header-logo-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 170px;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.header-center {
+  flex: 1;
+  text-align: center;
+  min-width: 0;
 }
 
 /* ========== STATUS ========== */
@@ -256,7 +269,7 @@ header {
   border-color: #B4D445;
   box-shadow: inset 4px 0 0 #B4D445;
 }
-.icono-emoji { font-size: 17px; width: 24px; text-align: center; flex-shrink: 0; }
+.icono-emoji { font-size: 15px; width: 42px; text-align: center; flex-shrink: 0; letter-spacing: -2px; }
 .icono-label { font-size: 11px; color: #135242; flex: 1; line-height: 1.35; font-weight: 600; }
 .icono-item.activo .icono-label { color: #0d3d32; }
 .icono-total {
@@ -562,12 +575,16 @@ tbody tr:hover td { background: rgba(180,212,69,0.12); color: #0d3d32; }
 <div class="overlay"></div>
 
 <header>
-  <img src="logo1.png.png" alt="Logo Izquierda" class="logo-img">
+  <div class="header-logo-wrap">
+    <img src="logo1.png.png" alt="Logo Izquierda" class="logo-img">
+  </div>
   <div class="header-center">
     <div class="h-title">GRÁFICAS DE MAPAS DE RIESGOS COMUNITARIOS</div>
     <div class="h-sub">MUNICIPIO SIMÓN BOLÍVAR · ESTADO ANZOÁTEGUI</div>
   </div>
-  <img src="logo2.png.png" alt="Logo Derecha" class="logo-img">
+  <div class="header-logo-wrap">
+    <img src="logo2.png.png" alt="Logo Derecha" class="logo-img">
+  </div>
 </header>
 
 <div id="statusbar">
@@ -756,6 +773,30 @@ function esSolucionado(estado) {
   if (!estado) return false;
   const e = String(estado).toLowerCase().trim();
   return e === 'atendido' || e === 'solucionado' || e === 'resuelto' || e === 'cerrado';
+}
+
+/** Emoji del tipo de riesgo según CATEGORIAS (por label exacto o parcial) */
+function emojiDeTipoRiesgo(tipoLabel) {
+  const t = String(tipoLabel || '').trim().toLowerCase();
+  if (!t) return '⚠️';
+  for (const cat of CATEGORIAS) {
+    for (const ic of cat.iconos) {
+      const lab = String(ic.label || '').toLowerCase();
+      if (lab === t || lab.includes(t) || t.includes(lab)) return ic.emoji;
+    }
+  }
+  // aliases frecuentes si el texto del reporte no coincide exacto
+  if (t.includes('basura') || t.includes('vertedero')) return '🗑️';
+  if (t.includes('inund')) return '🌊';
+  if (t.includes('derrumbe')) return '🚧';
+  if (t.includes('poste') || t.includes('eléctrico')) return '⚡';
+  if (t.includes('árbol') || t.includes('arbol')) return '🌳';
+  if (t.includes('vivienda') || t.includes('casa')) return '🏚️';
+  if (t.includes('agua potable') || t.includes('fuga')) return '💧';
+  if (t.includes('servidas') || t.includes('cloaca') || t.includes('colector')) return '☣️';
+  if (t.includes('neumático') || t.includes('cauchera')) return '🚗';
+  if (t.includes('pozo')) return '🕳️';
+  return '⚠️';
 }
 
 async function cargarTodo() {
@@ -949,8 +990,9 @@ function buscarReportePorCodigo(codigo, modo) {
   });
   tipoSeleccionadoActual = tipo;
   modoSeleccionadoActual = modo;
+  const emojiRiesgo = emojiDeTipoRiesgo(tipo);
   renderGraficas({
-    emoji: modo === 'solucionados' ? '✅' : '📢',
+    emoji: emojiRiesgo + (modo === 'solucionados' ? '✅' : '📢'),
     titulo: tipo,
     subtitulo: 'Búsqueda · ' + codigo,
     color,
@@ -1054,10 +1096,12 @@ function construirPanelReportes(panel, listaTipos, totales, color, modo) {
   listaTipos.forEach(tipo => {
     const total = totales[tipo] || 0;
     const pct = totalGeneral > 0 ? Math.round((total / totalGeneral) * 100) : 0;
+    const emojiRiesgo = emojiDeTipoRiesgo(tipo);
+    const emojiModo = modo === 'solucionados' ? '✅' : '📢';
     const item = document.createElement('div');
     item.className = 'icono-item';
     item.innerHTML = `
-      <span class="icono-emoji">${modo === 'solucionados' ? '✅' : '📢'}</span>
+      <span class="icono-emoji" title="${tipo}">${emojiRiesgo}${emojiModo}</span>
       <span class="icono-label">${tipo}</span>
       <span class="icono-total">${total} <span class="icono-pct">(${pct}%)</span></span>`;
     item.addEventListener('click', () => mostrarGraficaReporte(tipo, color, modo, item));
@@ -1112,8 +1156,9 @@ function mostrarGraficaReporte(tipo, color, modo, itemEl) {
     return modo === 'solucionados' ? sol : !sol;
   });
 
+  const emojiRiesgo = emojiDeTipoRiesgo(tipo);
   renderGraficas({
-    emoji: modo === 'solucionados' ? '✅' : '📢',
+    emoji: emojiRiesgo + (modo === 'solucionados' ? '✅' : '📢'),
     titulo: tipo,
     subtitulo: (modo === 'solucionados' ? 'Problemas solucionados' : 'Riesgos reportados') + ' · por comuna',
     color,
@@ -1604,7 +1649,7 @@ async function eliminarReporteCompleto(id) {
           </div>`;
       } else {
         renderGraficas({
-          emoji: modoAntes === 'solucionados' ? '✅' : '📢',
+          emoji: emojiDeTipoRiesgo(tipoAntes) + (modoAntes === 'solucionados' ? '✅' : '📢'),
           titulo: tipoAntes,
           subtitulo: (modoAntes === 'solucionados' ? 'Problemas solucionados' : 'Riesgos reportados') + ' · por comuna',
           color,
